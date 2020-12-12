@@ -1,42 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-
-type Props = {
-  userId: number;
-  enabled: boolean;
+import {Message} from '../models'
+interface Props {
+  userId: string;
   onConnected?: () => void;
 };
 
-type Message = {
-  content: string;
-  senderId: string;
-  userId: string;
-  date: Date;
-};
-
-const useWebSockets = ({ userId, enabled, onConnected }: Props) => {
+export const useWebSockets = ({ userId, onConnected }: Props) => {
   const ref = useRef<Socket>();
   const [messages, setMessages] = useState<Message[]>([]);
-
-  const send = (msg: string, senderId: number) => {
-    ref.current!.emit('message', {
+  
+  const send = (msg: string, senderId: string) => {
+    ref.current!.emit('new message', {
       content: msg,
-      senderId: senderId,
+      senderId,
       userId,
       date: new Date(),
     });
   };
 
   useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-
-    const socket = io('localhost:3000');
-
+    const socket = io('http://192.168.0.45:3000');
+    // const socket = io('http://localhost:3000');
+    
     socket.emit('joinRoom', userId);
 
-    socket.emit('message', (msg: Message) => {
+    socket.on('new message', (msg: Message) => {
       setMessages((prev) => prev.concat(msg));
     });
 
@@ -57,7 +46,7 @@ const useWebSockets = ({ userId, enabled, onConnected }: Props) => {
     ref.current = socket;
 
     return () => {socket.disconnect();}
-  }, [enabled, userId]);
+  }, []);
 
   return {
     send,
