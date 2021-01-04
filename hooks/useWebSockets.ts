@@ -11,18 +11,26 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
   const [messages, setMessages] = useState<Message[]>([]);
   
   const send = (msg: string, senderId: string) => {
-    ref.current!.emit('new message', {
+    const message = {
       content: msg,
       senderId,
       userId,
       date: new Date(),
-    });
+    };
+
+    setMessages(messages.concat(message));
+    ref.current!.emit('new message', message);
   };
 
+  const newChat = () => {
+    ref.current!.emit('new chat');
+    setMessages([]);
+  }
+
   useEffect(() => {
-    const socket = io('http://192.168.0.45:3000');
+    const socket = io('http://192.168.1.19:3000');
     // const socket = io('http://localhost:3000');
-    
+
     socket.emit('joinRoom', userId);
 
     socket.on('new message', (msg: Message) => {
@@ -50,6 +58,7 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
 
   return {
     send,
+    newChat,
     messages,
   };
 };

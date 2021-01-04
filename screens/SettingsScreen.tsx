@@ -16,7 +16,7 @@ export default function SettingsScreen() {
   
   return (
       <View style={styles.container}>
-        <TextInput style={styles.text} autoCorrect={false} onChangeText={text => setName(text)} value={name} />
+        <TextInput style={styles.textInput} autoCorrect={false} onChangeText={text => setName(text)} value={name} />
         <Button
           onPress={onButtonPress}
           title="Start"
@@ -42,7 +42,8 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
-  text: {
+  textInput: {
+    border: '1px solid black',
     fontSize: 16,
     color: 'orangered'
   },

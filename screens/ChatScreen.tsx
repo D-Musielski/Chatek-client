@@ -10,25 +10,35 @@ import { ScrollView } from 'react-native-gesture-handler';
 export default function SettingsScreen() {
   const { username } = useContext(RootContext);
   const [ message, setMessage ] = useState('');
-  const { messages, send } = useWebSockets({
+  const { messages, send, newChat } = useWebSockets({
     userId: username
   });
+  const sendMessage = (msg: string, senderId: string) => {
+    send(msg, senderId);
+    setMessage('');
+  }
   
   return (
       <View style={styles.container}>
         <ScrollView>
           {messages.map(m => 
             <Text key={m.content} style={styles.text}>
-              {m.senderId}: {m.content}
+              {m.senderId === username ? 'You' : m.senderId}: {m.content}
             </Text>
           )}
         </ScrollView>
         <TextInput style={styles.textInput} autoCorrect={false} onChangeText={text => setMessage(text)} value={message} />
         <Button
-          onPress={() => send(message, username)}
+          onPress={() => sendMessage(message, username)}
           title="Send"
           color="#841584"
           accessibilityLabel="Save name and start chatting"
+        />
+        <Button
+          onPress={() => newChat()}
+          title="New Chat"
+          color="#841584"
+          accessibilityLabel="New Chat"
         />
       </View>
   );
@@ -55,6 +65,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: 'white',
+    border: '1px solid',
     width: 100
   }
 });
