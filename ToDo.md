@@ -1,4 +1,5 @@
-- Rename TabOne and TabTwo components
+- Rename SettingsTab and ChatTab components ✅
+- Autofocus on input ✅
 - Add messsages:
   - If user is in waiting room show message 'Looking for partner...'
   - If connected to partner show message 'Partner found. Say Hi!'

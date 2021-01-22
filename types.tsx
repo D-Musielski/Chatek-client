@@ -4,14 +4,14 @@ export type RootStackParamList = {
 };
 
 export type BottomTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+  Settings: undefined;
+  Chat: undefined;
 };
 
-export type TabOneParamList = {
+export type SettingsTabParamList = {
   SettingsScreen: undefined;
 };
 
-export type TabTwoParamList = {
+export type ChatTabParamList = {
   ChatScreen: undefined;
 };

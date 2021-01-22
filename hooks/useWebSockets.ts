@@ -28,7 +28,7 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
   }
 
   useEffect(() => {
-    const socket = io('http://192.168.1.19:3000');
+    const socket = io('http://192.168.56.1:3000');
     // const socket = io('http://localhost:3000');
 
     socket.emit('joinRoom', userId);

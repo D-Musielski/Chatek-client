@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useWebSockets } from '../hooks/useWebSockets'
 import { StyleSheet, TextInput, Button, Text } from 'react-native';
 import { io } from 'socket.io-client'
@@ -7,17 +7,28 @@ import { View } from '../components/Themed';
 import { Message } from '../models'
 import { ScrollView } from 'react-native-gesture-handler';
 
-export default function SettingsScreen() {
+export default function ChatScreen() {
   const { username } = useContext(RootContext);
   const [ message, setMessage ] = useState('');
   const { messages, send, newChat } = useWebSockets({
     userId: username
   });
+  let textInput: any = null;
+
   const sendMessage = (msg: string, senderId: string) => {
     send(msg, senderId);
     setMessage('');
+    focusInput();
   }
   
+  const focusInput = () => {
+    textInput.focus();
+  }
+
+  useEffect(() => {
+    focusInput();
+  }, []);
+
   return (
       <View style={styles.container}>
         <ScrollView>
@@ -27,7 +38,7 @@ export default function SettingsScreen() {
             </Text>
           )}
         </ScrollView>
-        <TextInput style={styles.textInput} autoCorrect={false} onChangeText={text => setMessage(text)} value={message} />
+        <TextInput ref={input => textInput = input} style={styles.textInput} autoCorrect={false} onChangeText={text => setMessage(text)} value={message} autoFocus />
         <Button
           onPress={() => sendMessage(message, username)}
           title="Send"

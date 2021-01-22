@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { StyleSheet, TextInput, Button } from 'react-native';
 import { RootContext } from '../context/RootContext'
 import { useNavigation } from '@react-navigation/native'
@@ -8,15 +8,20 @@ export default function SettingsScreen() {
   const { username, setCurrentUsername } = useContext(RootContext);
   const [ name, setName ] = useState(username);
   const navigation = useNavigation();
+  let textInput: any = null;
 
   const onButtonPress = (): void => {
     setCurrentUsername(name);
-    navigation.navigate('TabTwo')
+    navigation.navigate('Chat')
   }
+
+  useEffect(() => {
+    textInput.focus();
+  }, []);
   
   return (
       <View style={styles.container}>
-        <TextInput style={styles.textInput} autoCorrect={false} onChangeText={text => setName(text)} value={name} />
+        <TextInput ref={input => textInput = input} style={styles.textInput} autoCorrect={false} onChangeText={text => setName(text)} value={name} />
         <Button
           onPress={onButtonPress}
           title="Start"
