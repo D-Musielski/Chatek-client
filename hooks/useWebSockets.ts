@@ -8,7 +8,13 @@ interface Props {
 
 export const useWebSockets = ({ userId, onConnected }: Props) => {
   const ref = useRef<Socket>();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const waitingMessage = [{
+    content: 'Looking for partner...',
+    senderId: 'System',
+    userId,
+    date: new Date(),
+  }];
+  const [messages, setMessages] = useState<Message[]>(waitingMessage);
   
   const send = (msg: string, senderId: string) => {
     const message = {
@@ -24,7 +30,7 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
 
   const newChat = () => {
     ref.current!.emit('new chat');
-    setMessages([]);
+    setMessages(waitingMessage);
   }
 
   useEffect(() => {
@@ -42,6 +48,8 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
     });
 
     socket.on('connect', () => {
+      console.log(socket);
+       
       if (onConnected) {
         onConnected();
       }
@@ -50,6 +58,26 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
     socket.on('reconnect', () => {
       socket.emit('joinRoom', userId);
     });
+
+    socket.on('new chat', () => {
+      const newChatMessage = [{
+        content: 'Partner found. Say Hi!',
+        senderId: 'System',
+        userId,
+        date: new Date(),
+      }];
+      setMessages(newChatMessage);
+    })
+
+    socket.on('partner disconnected', () => {
+      const disconnectedMessage = {
+        content: 'Partner has disconnected.',
+        senderId: 'System',
+        userId,
+        date: new Date(),
+      };
+      setMessages((prev) => prev.concat(disconnectedMessage));
+    })
 
     ref.current = socket;
 

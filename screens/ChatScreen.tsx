@@ -10,7 +10,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 export default function ChatScreen() {
   const { username } = useContext(RootContext);
   const [ message, setMessage ] = useState('');
-  const { messages, send, newChat } = useWebSockets({
+  const { send, newChat, messages } = useWebSockets({
     userId: username
   });
   let textInput: any = null;
