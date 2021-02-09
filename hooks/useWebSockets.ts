@@ -33,6 +33,10 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
     setMessages(waitingMessage);
   }
 
+  const isTyping = (flag: boolean) => {
+    flag ? ref.current!.emit('start typing') : ref.current!.emit('stop typing');
+  }
+
   useEffect(() => {
     const socket = io('http://192.168.56.1:3000');
     // const socket = io('http://localhost:3000');
@@ -79,6 +83,22 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
       setMessages((prev) => prev.concat(disconnectedMessage));
     })
 
+    socket.on('start typing', () => {
+      const partnerTypingMessage = {
+        content: 'Partner is typing...',
+        senderId: 'System',
+        userId,
+        date: new Date(),
+      };
+      setMessages((prev) => prev.concat(partnerTypingMessage));
+    })
+
+    socket.on('stop typing', () => {
+      setMessages(prev => 
+        prev.filter(message => message.content !== "Partner is typing...")
+      );
+    })
+
     ref.current = socket;
 
     return () => {socket.disconnect();}
@@ -88,5 +108,6 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
     send,
     newChat,
     messages,
+    isTyping,
   };
 };

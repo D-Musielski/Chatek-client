@@ -4,7 +4,7 @@
   - If user is in waiting room show message 'Looking for partner...' ✅
   - If connected to partner show message 'Partner found. Say Hi!' ✅
   - Show message that chat partner has disconnected ✅
-- Show that someone is typing
+- Show that someone is typing ✅
 - Disable "Send" button when input is empty
 - Disable "Send" button when partner disconnects
 - Disable "New Chat" button when looking for partner

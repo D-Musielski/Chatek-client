@@ -10,13 +10,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 export default function ChatScreen() {
   const { username } = useContext(RootContext);
   const [ message, setMessage ] = useState('');
-  const { send, newChat, messages } = useWebSockets({
+  const { send, newChat, messages, isTyping } = useWebSockets({
     userId: username
   });
   let textInput: any = null;
 
   const sendMessage = (msg: string, senderId: string) => {
     send(msg, senderId);
+    isTyping(false);
     setMessage('');
     focusInput();
   }
@@ -24,6 +25,20 @@ export default function ChatScreen() {
   const focusInput = () => {
     textInput.focus();
   }
+
+  const handleOnChange = (text: string) => {    
+    setMessage(text);
+  }
+
+  useEffect(() => {
+    if (message.length === 1) {
+      isTyping(true);
+    } 
+
+    if (message.length === 0) {
+      isTyping(false);
+    } 
+  }, [message])
 
   useEffect(() => {
     focusInput();
@@ -33,12 +48,12 @@ export default function ChatScreen() {
       <View style={styles.container}>
         <ScrollView>
           {messages.map(m => 
-            <Text key={m.content} style={styles.text}>
+            <Text key={Math.random().toString()} style={styles.text}>
               {m.senderId === username ? 'You' : m.senderId}: {m.content}
             </Text>
           )}
         </ScrollView>
-        <TextInput ref={input => textInput = input} style={styles.textInput} autoCorrect={false} onChangeText={text => setMessage(text)} value={message} autoFocus />
+        <TextInput ref={input => textInput = input} style={styles.textInput} autoCorrect={false} onChangeText={text => handleOnChange(text)} value={message} autoFocus />
         <Button
           onPress={() => sendMessage(message, username)}
           title="Send"
