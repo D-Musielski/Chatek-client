@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
+import React, {useContext} from 'react';
+import { RootContext } from '../context/RootContext'
+import { useNavigation } from '@react-navigation/native'
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -13,6 +15,8 @@ const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const { username } = useContext(RootContext);
+  const navigation = useNavigation();
 
   return (
     <BottomTab.Navigator
@@ -30,6 +34,15 @@ export default function BottomTabNavigator() {
         component={ChatTabNavigator}
         options={{
           tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+        }}
+        listeners={{
+          tabPress: e => {
+            e.preventDefault();
+            if (!username) {
+              return null;
+            }
+            navigation.navigate('Chat');
+          },
         }}
       />
     </BottomTab.Navigator>

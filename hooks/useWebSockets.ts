@@ -15,6 +15,7 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
     date: new Date(),
   }];
   const [messages, setMessages] = useState<Message[]>(waitingMessage);
+  const [isPartnerConnected, setIsPartnerConnected] = useState<boolean>(false);
   
   const send = (msg: string, senderId: string) => {
     const message = {
@@ -31,6 +32,7 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
   const newChat = () => {
     ref.current!.emit('new chat');
     setMessages(waitingMessage);
+    setIsPartnerConnected(false);
   }
 
   const isTyping = (flag: boolean) => {
@@ -71,6 +73,7 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
         date: new Date(),
       }];
       setMessages(newChatMessage);
+      setIsPartnerConnected(true);
     })
 
     socket.on('partner disconnected', () => {
@@ -109,5 +112,6 @@ export const useWebSockets = ({ userId, onConnected }: Props) => {
     newChat,
     messages,
     isTyping,
+    isPartnerConnected
   };
 };

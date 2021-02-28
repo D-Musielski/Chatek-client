@@ -1,16 +1,16 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useWebSockets } from '../hooks/useWebSockets'
 import { StyleSheet, TextInput, Button, Text } from 'react-native';
-import { io } from 'socket.io-client'
 import { RootContext } from '../context/RootContext'
 import { View } from '../components/Themed';
-import { Message } from '../models'
 import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native'
 
 export default function ChatScreen() {
   const { username } = useContext(RootContext);
+  const navigation = useNavigation();
   const [ message, setMessage ] = useState('');
-  const { send, newChat, messages, isTyping } = useWebSockets({
+  const { send, newChat, messages, isTyping, isPartnerConnected } = useWebSockets({
     userId: username
   });
   let textInput: any = null;
@@ -21,6 +21,12 @@ export default function ChatScreen() {
     setMessage('');
     focusInput();
   }
+
+  const newChatHandler = () => {
+    newChat();
+    setMessage('');
+    focusInput();
+  };
   
   const focusInput = () => {
     textInput.focus();
@@ -42,7 +48,10 @@ export default function ChatScreen() {
 
   useEffect(() => {
     focusInput();
-  }, []);
+    if (!username) {
+      navigation.navigate('Settings');
+    }
+  }, []);  
 
   return (
       <View style={styles.container}>
@@ -53,18 +62,27 @@ export default function ChatScreen() {
             </Text>
           )}
         </ScrollView>
-        <TextInput ref={input => textInput = input} style={styles.textInput} autoCorrect={false} onChangeText={text => handleOnChange(text)} value={message} autoFocus />
+        <TextInput 
+          ref={input => textInput = input} 
+          style={styles.textInput} 
+          autoCorrect={false} 
+          onChangeText={text => handleOnChange(text)} 
+          value={message} 
+          autoFocus 
+        />
         <Button
           onPress={() => sendMessage(message, username)}
           title="Send"
           color="#841584"
-          accessibilityLabel="Save name and start chatting"
+          accessibilityLabel="Send message"
+          disabled={!(!!message && isPartnerConnected)}
         />
         <Button
-          onPress={() => newChat()}
+          onPress={() => newChatHandler()}
           title="New Chat"
           color="#841584"
           accessibilityLabel="New Chat"
+          disabled={!isPartnerConnected}
         />
       </View>
   );
